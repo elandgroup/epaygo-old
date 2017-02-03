@@ -1,8 +1,14 @@
 package al
 
 const (
-	OpenApi = "https://openapi.alipay.com/gateway.do"
+	OpenApi          = "https://openapi.alipay.com/gateway.do"
+	SellerPrivateKey = "SellerPrivateKey"
+	AliPublicKey     = "AliPublicKey"
 )
+
+type Person struct {
+	Name string
+}
 
 //const For request alipay
 const (
@@ -78,4 +84,21 @@ const (
 
 	//Reverse
 
+)
+
+const (
+	AppIdMap            = "AppId"
+	SellerPrivateKeyMap = "SellerPrivateKey"
+	AliPublicKeyMap     = "AliPublicKey"
+	OutTradeNoMap       = "OutTradeNo"
+	ALAuthTokenMap      = "ALAuthToken"
+
+	AuthCodeMap    = "AuthCode"
+	TotalAmountMap = "TotalAmount"
+	SubjectMap     = "Subject"
+	StoreIdMap     = "StoreId"
+
+	SellerIdMap     = "SellerId"
+	TimeExpireMap   = "TimeExpire"
+	ExtendParamsMap = "ExtendParams"
 )
