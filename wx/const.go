@@ -151,3 +151,26 @@ const (
 	//RefundFee   = "refund_fee"
 	//OutRefundNo = "out_refund_no"
 )
+
+const (
+	//common param
+	AppIdMap          = "AppId"
+	SpbillCreateIpMap = "SpbillCreateIp"
+	MchIdMap          = "MchId"
+	SubAppIdMap       = "SubAppId"
+	SubMchIdMap       = "SubMchId"
+
+	//direct pay
+	BodyMap       = "Body"
+	OutTradeNoMap = "OutTradeNo"
+	TotalFeeMap   = "TotalFee"
+	AuthCodeMap   = "AuthCode"
+	DeviceInfoMap = "DeviceInfo"
+
+	DetailMap   = "Detail"
+	AttachMap   = "Attach"
+	FeeTypeMap  = "FeeType"
+	GoodsTagMap = "GoodsTag"
+
+	LimitPayMap = "LimitPay"
+)

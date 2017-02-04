@@ -3,7 +3,6 @@ package epaygo
 import (
 	"encoding/json"
 	"epaygo/al"
-	"epaygo/helper"
 	"epaygo/helper/cryptoHelper"
 	"epaygo/helper/mapHelper"
 	"errors"
@@ -44,10 +43,11 @@ func (a *AlPayService) DirectPay(params map[string]string) (result string, err e
 
 	p, _ := json.Marshal(payData)
 
-	_, body, _ := goreq.New().Post(al.OpenApi).ContentType("form").SendMapString(string(p)).End()
+	_, body, _ := goreq.New().Get(al.OpenApi).Query(string(p)).End()
+	//goreq.New().Post(al.OpenApi).ContentType("form").SendMapString(string(p)).End()
 
-	//return a.ParseResponse(helper.EncodingAlUrl(body), params[al.AliPublicKey], al.PayNode)
-	return helper.EncodingAlUrl(body), nil
+	return a.ParseResponse(body, params[al.AliPublicKey], al.PayNode)
+	//return body, nil
 }
 
 func (a *AlPayService) OrderQuery(params map[string]string) (result string, err error) {
@@ -64,10 +64,10 @@ func (a *AlPayService) OrderQuery(params map[string]string) (result string, err 
 	p, _ := json.Marshal(payData)
 	fmt.Println(string(p))
 
-	_, body, _ := goreq.New().Post(al.OpenApi).ContentType("form").SendMapString(string(p)).End()
-
-	//return a.ParseResponse(helper.EncodingAlUrl(body), params[al.AliPublicKeyMap], al.QueryNode)
-	return body, nil
+	//	_, body, _ := goreq.New().Post(al.OpenApi).ContentType("form").SendMapString(string(p)).End()
+	_, body, _ := goreq.New().Get(al.OpenApi).Query(string(p)).End()
+	return a.ParseResponse(body, params[al.AliPublicKeyMap], al.QueryNode)
+	//return body, nil
 }
 
 func (a *AlPayService) Refund(params map[string]string) (result string, err error) {
@@ -88,15 +88,15 @@ func (a *AlPayService) Refund(params map[string]string) (result string, err erro
 
 	p, _ := json.Marshal(payData)
 	fmt.Println(string(p))
-	_, body, _ := goreq.New().Post(al.OpenApi).ContentType("form").SetHeader("Accept", "application/json;charset:gbk").SendMapString(string(p)).End()
-
-	return a.ParseResponse(helper.EncodingAlUrl(body), params[al.AliPublicKeyMap], al.RefundNode)
+	//_, body, _ := goreq.New().Post(al.OpenApi).ContentType("form").SetHeader("Accept", "application/json;charset:gbk").SendMapString(string(p)).End()
+	_, body, _ := goreq.New().Get(al.OpenApi).Query(string(p)).End()
+	return a.ParseResponse(body, params[al.AliPublicKeyMap], al.RefundNode)
 	//return body, nil
 }
 
 func (a *AlPayService) Reverse(params map[string]string, count int) (result string, err error) {
 	if count <= 0 {
-		return "", errors.New("10005")
+		return "", errors.New("Numbers cannot be less than zero")
 	}
 
 	payData := *a.BuildCommonparam(params, al.ReverseCustom)
@@ -112,12 +112,12 @@ func (a *AlPayService) Reverse(params map[string]string, count int) (result stri
 	p, _ := json.Marshal(payData)
 	fmt.Println(string(p))
 
-	if req, body, reqErr := goreq.New().Post(al.OpenApi).ContentType("form").SendMapString(string(p)).End(); reqErr != nil {
+	if req, body, reqErr := goreq.New().Get(al.OpenApi).Query(string(p)).End(); reqErr != nil {
 		return "", reqErr[0]
 	} else {
 		fmt.Println(req, body, reqErr)
 
-		if result, e := a.ParseResponse(helper.EncodingAlUrl(body), params[al.AliPublicKeyMap], al.ReverseNode); e == nil {
+		if result, e := a.ParseResponse(body, params[al.AliPublicKeyMap], al.ReverseNode); e == nil {
 			return result, nil
 		} else {
 			if len(result) == 0 {
@@ -131,7 +131,7 @@ func (a *AlPayService) Reverse(params map[string]string, count int) (result stri
 				return a.Reverse(params, count)
 			} else {
 				if v, e := rJson.Get(al.Code).String(); e != nil {
-					return "", errors.New("10007") //no data
+					return "", errors.New("No data") //no data
 				} else {
 					return "", errors.New(v)
 				}
