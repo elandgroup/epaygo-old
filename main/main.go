@@ -24,10 +24,10 @@ func RegisterApi() {
 	apiGroup := e.Group("/api")
 	v1 := apiGroup.Group("/v1")
 
-	//wx := v1.Group("/wx")
+	wx := v1.Group("/wx")
 	al := v1.Group("/al")
 
-	// wx.POST("/pay", api.DirectPay)
+	wx.POST("/pay", DirectPayWx)
 
 	// wx.POST("/query", api.OrderQuery)
 

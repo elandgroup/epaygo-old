@@ -1,60 +1,91 @@
 package epaygo
 
-// import (
-// 	"epaygo/wx"
-// 	"oc-api-go/config"
-// 	"strings"
+import (
+	"epaygo/helper"
+	"epaygo/wx"
+	"errors"
+	"net/http"
+	"strings"
 
-// 	"epay.api.biz.go/epay.api.go/common"
-// 	"epay.api.biz.go/epay.api.go/common/smt"
-// 	"epay.api.biz.go/epay.api.go/common/wxConst"
-// 	"github.com/smallnest/goreq"
-// )
+	"github.com/smallnest/goreq"
+)
 
-// type WxPayService struct {
-// }
+type WxPayService struct {
+}
 
-// func (a *WxPayService) DirectPay(params map[string]string) (result string, err error) {
+func (a *WxPayService) DirectPay(params map[string]string) (result string, err error) {
 
-// 	wxPayData := a.BuildCommonparam(params)
+	wxPayData := a.BuildCommonparam(params)
 
-// 	a.SetValue(wxPayData, wx.Body, params[wx.BodyMap])
-// 	a.SetValue(wxPayData, wxConst.OutTradeNo, dto.OutTradeNo)
-// 	a.SetValue(wxPayData, wxConst.TotalFee, dto.TotalFee)
-// 	a.SetValue(wxPayData, wxConst.AuthCode, dto.AuthCode)
-// 	a.SetValue(wxPayData, wxConst.DeviceInfo, dto.DeviceInfo)
+	a.SetValue(wxPayData, wx.Body, params[wx.BodyMap])
+	a.SetValue(wxPayData, wx.OutTradeNo, params[wx.OutTradeNoMap])
+	a.SetValue(wxPayData, wx.TotalFee, params[wx.TotalFeeMap])
+	a.SetValue(wxPayData, wx.AuthCode, params[wx.AuthCodeMap])
+	a.SetValue(wxPayData, wx.DeviceInfo, params[wx.DeviceInfoMap])
 
-// 	a.SetValue(wxPayData, wxConst.Detail, dto.Detail)
-// 	a.SetValue(wxPayData, wxConst.Attach, dto.Attach)
-// 	a.SetValue(wxPayData, wxConst.FeeType, dto.FeeType)
-// 	a.SetValue(wxPayData, wxConst.GoodsTag, dto.GoodsTag)
-// 	a.SetValue(wxPayData, wxConst.LimitPay, dto.LimitPay)
+	a.SetValue(wxPayData, wx.Detail, params[wx.DetailMap])
+	a.SetValue(wxPayData, wx.Attach, params[wx.AttachMap])
+	a.SetValue(wxPayData, wx.FeeType, params[wx.FeeTypeMap])
+	a.SetValue(wxPayData, wx.GoodsTag, params[wx.GoodsTagMap])
+	a.SetValue(wxPayData, wx.LimitPay, params[wx.LimitPayMap])
 
-// 	a.SetValue(wxPayData, wxConst.Sign, wxPayData.MakeSign(dto.Key))
+	a.SetValue(wxPayData, wx.Sign, wxPayData.MakeSign(params[wx.KeyMap]))
 
-// 	xmlParam := wxPayData.ToXml()
-// 	req, body, reqErr := goreq.New().Post(config.Config.WX.MicroPay_Url).ContentType("xml").SendRawString(xmlParam).End()
-// 	smt.Debug.Println("MicroPay_Url:", config.Config.WX.MicroPay_Url)
-// 	smt.Debug.Println(req, body, reqErr)
+	xmlParam := wxPayData.ToXml()
+	req, body, reqErr := goreq.New().Post(wx.MicroPay_Url).ContentType("xml").SendRawString(xmlParam).End()
 
-// 	return a.ParseResult(req, body, reqErr, dto.Key)
+	return a.ParseResult(req, body, reqErr, params[wx.KeyMap])
 
-// }
+}
 
-// func (a *WxPayService) BuildCommonparam(params map[string]string) WxPayData {
-// 	wxPayData := NewWxPayData()
-// 	a.SetValue(*wxPayData, wxConst.SpbillCreateIp, wxpaybaseDto.SpbillCreateIp)
-// 	a.SetValue(*wxPayData, wxConst.AppId, wxpaybaseDto.AppId)
-// 	a.SetValue(*wxPayData, wxConst.MchId, wxpaybaseDto.MchId)
-// 	a.SetValue(*wxPayData, wxConst.SubAppId, wxpaybaseDto.SubAppId)
-// 	a.SetValue(*wxPayData, wxConst.SubMchId, wxpaybaseDto.SubMchId)
+func (a *WxPayService) BuildCommonparam(params map[string]string) wx.WxPayData {
+	wxPayData := wx.NewWxPayData()
+	a.SetValue(*wxPayData, wx.SpbillCreateIp, params[wx.SpbillCreateIpMap])
+	a.SetValue(*wxPayData, wx.AppId, params[wx.AppIdMap])
+	a.SetValue(*wxPayData, wx.MchId, params[wx.MchIdMap])
+	a.SetValue(*wxPayData, wx.SubAppId, params[wx.SubAppIdMap])
+	a.SetValue(*wxPayData, wx.SubMchId, params[wx.SubMchIdMap])
 
-// 	a.SetValue(*wxPayData, wxConst.NonceStr, common.Uuid32())
-// 	return *wxPayData
-// }
+	a.SetValue(*wxPayData, wx.NonceStr, helper.Uuid32())
+	return *wxPayData
+}
 
-// func (a *WxPayService) SetValue(wxPayData WxPayData, key string, value string) {
-// 	if len(strings.TrimSpace(value)) != 0 {
-// 		wxPayData.SetValue(key, value)
-// 	}
-// }
+func (a *WxPayService) SetValue(wxPayData wx.WxPayData, key string, value string) {
+	if len(strings.TrimSpace(value)) != 0 {
+		wxPayData.SetValue(key, value)
+	}
+}
+
+func (a *WxPayService) ParseResult(req goreq.Response, body string, reqErrs []error, key string) (result string, err error) {
+	//serviceResult := ServiceResult{Result: nil, Success: ResultType.Unknown, Error: APIError{Code: 10004, Message: "", Details: nil}}
+	wxResponse := wx.NewWxPayData()
+	if err != nil {
+		return "", reqErrs[0]
+	}
+	if req.StatusCode == http.StatusOK {
+		if _, err := wxResponse.FromXml(body, key); err != nil {
+			return "", errors.New("The request failed, please check whether the network is normal")
+		}
+
+		if wxResponse == nil {
+			return "", errors.New("The request failed, please check whether the network is normal")
+		} else {
+			if len(wxResponse.GetValue(wx.ReturnCode)) == 0 || strings.ToUpper(wxResponse.GetValue(wx.ReturnCode)) != "SUCCESS" {
+				return wxResponse.ToJson(), errors.New("The request failed, please check whether the network is normal")
+			}
+			if len(wxResponse.GetValue(wx.ResultCode)) != 0 && strings.ToUpper(wxResponse.GetValue(wx.ResultCode)) == "SUCCESS" {
+				return wxResponse.ToJson(), nil
+			} else {
+				errCode := wxResponse.GetValue(wx.ErrCode)
+				if errCode == wx.SystemError || errCode == wx.BankError || errCode == wx.UserPaying {
+					return wxResponse.ToJson(), errors.New("result is unknown")
+				} else {
+					return wxResponse.ToJson(), errors.New(errCode)
+				}
+			}
+		}
+	} else {
+		return "", errors.New("The request failed, please check whether the network is normal")
+	}
+	return "", errors.New("The request failed, please check whether the network is normal")
+}

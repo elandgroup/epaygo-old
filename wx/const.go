@@ -1,5 +1,13 @@
 package wx
 
+// api for wechar
+const (
+	MicroPay_Url   = "https://api.mch.weixin.qq.com/pay/micropay"
+	OrderQuery_Url = "https://api.mch.weixin.qq.com/pay/orderquery"
+	Refund_Url     = "https://api.mch.weixin.qq.com/secapi/pay/refund"
+	Reverse_Url    = "https://api.mch.weixin.qq.com/secapi/pay/reverse"
+)
+
 //const For Request wechat
 const (
 
@@ -159,10 +167,11 @@ const (
 	MchIdMap          = "MchId"
 	SubAppIdMap       = "SubAppId"
 	SubMchIdMap       = "SubMchId"
+	KeyMap            = "Key"
+	OutTradeNoMap     = "OutTradeNo"
 
 	//direct pay
 	BodyMap       = "Body"
-	OutTradeNoMap = "OutTradeNo"
 	TotalFeeMap   = "TotalFee"
 	AuthCodeMap   = "AuthCode"
 	DeviceInfoMap = "DeviceInfo"

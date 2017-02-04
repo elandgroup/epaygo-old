@@ -117,7 +117,7 @@ func (a *AlPayService) Reverse(params map[string]string, count int) (result stri
 	} else {
 		fmt.Println(req, body, reqErr)
 
-		if result, e := a.ParseResponse(body, params[al.AliPublicKeyMap], al.ReverseNode); e == nil {
+		if result, e := a.ParseResponse(body, params[al.AliPublicKeyMap], al.ReverseNode); len(result) != 0 && e == nil {
 			return result, nil
 		} else {
 			if len(result) == 0 {
