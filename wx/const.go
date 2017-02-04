@@ -182,4 +182,17 @@ const (
 	GoodsTagMap = "GoodsTag"
 
 	LimitPayMap = "LimitPay"
+
+	OpUserIdMap = "OpUserId"
+	
+	//refund
+	TransactionIdMap = "TransactionId"
+	OutRefundNoMap   = "OutRefundNo"
+	RefundIdMap      = "RefundId"
+	RefundFeeMap     = "RefundFee"
+	RefundFeeTypeMap = "RefundFeeType"
+
+	CertNameMap = "CertName"
+	CertKeyMap  = "CertKey"
+	RootCaMap   = "RootCa"
 )

@@ -27,13 +27,13 @@ func RegisterApi() {
 	wx := v1.Group("/wx")
 	al := v1.Group("/al")
 
-	wx.POST("/pay", DirectPayWx)
+	wx.POST("/pay", DirectPayWX)
 
-	// wx.POST("/query", api.OrderQuery)
+	wx.POST("/query", OrderQueryWX)
 
-	// wx.POST("/refund", api.Refund)
+	wx.POST("/refund", RefundWX)
 
-	// wx.POST("/reverse", api.Reverse)
+	wx.POST("/reverse", ReverseWX)
 
 	al.POST("/pay", DirectPayAL)
 

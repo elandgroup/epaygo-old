@@ -2,11 +2,14 @@ package epaygo
 
 import (
 	"epaygo/helper"
+	"epaygo/helper/cryptoHelper"
 	"epaygo/wx"
 	"errors"
 	"net/http"
 	"strings"
+	"time"
 
+	simplejson "github.com/bitly/go-simplejson"
 	"github.com/smallnest/goreq"
 )
 
@@ -35,6 +38,113 @@ func (a *WxPayService) DirectPay(params map[string]string) (result string, err e
 	req, body, reqErr := goreq.New().Post(wx.MicroPay_Url).ContentType("xml").SendRawString(xmlParam).End()
 
 	return a.ParseResult(req, body, reqErr, params[wx.KeyMap])
+
+}
+
+func (a *WxPayService) RefundWx(params map[string]string) (result string, err error) {
+	wxPayData := a.BuildCommonparam(params)
+
+	wxPayData.RemoveKey(wx.SpbillCreateIp)
+	a.SetValue(wxPayData, wx.DeviceInfo, params[wx.DeviceInfoMap])
+	a.SetValue(wxPayData, wx.TransactionId, params[wx.TransactionIdMap])
+	a.SetValue(wxPayData, wx.OutRefundNo, params[wx.OutRefundNoMap])
+	a.SetValue(wxPayData, wx.OutTradeNo, params[wx.OutTradeNoMap])
+	a.SetValue(wxPayData, wx.RefundId, params[wx.RefundIdMap])
+
+	a.SetValue(wxPayData, wx.TotalFee, params[wx.TotalFeeMap])
+	a.SetValue(wxPayData, wx.RefundFee, params[wx.RefundFeeMap])
+	a.SetValue(wxPayData, wx.RefundFeeType, params[wx.RefundFeeTypeMap])
+	a.SetValue(wxPayData, wx.OpUserId, params[wx.OpUserIdMap])
+
+	a.SetValue(wxPayData, wx.Sign, wxPayData.MakeSign(params[wx.KeyMap]))
+
+	xmlParam := wxPayData.ToXml()
+	reqNew := goreq.New()
+
+	certName := params[wx.CertNameMap]
+	certKey := params[wx.CertKeyMap]
+	rootCa := params[wx.RootCaMap]
+	if transport, e := cryptoHelper.CertTransport(&certName, &certKey, &rootCa); e == nil {
+
+		reqNew.Transport = transport
+		reqNew.Client = &http.Client{Transport: transport}
+	} else {
+		return "", errors.New("cert error:" + e.Error())
+
+	}
+
+	req, body, reqErr := reqNew.Post(wx.Refund_Url).ContentType("xml").SendRawString(xmlParam).End()
+
+	return a.ParseResult(req, body, reqErr, params[wx.KeyMap])
+
+}
+
+func (a *WxPayService) OrderQueryWx(params map[string]string) (result string, err error) {
+
+	wxPayData := a.BuildCommonparam(params)
+
+	a.SetValue(wxPayData, wx.TransactionId, params[wx.TransactionIdMap])
+	a.SetValue(wxPayData, wx.OutTradeNo, params[wx.OutTradeNoMap])
+
+	a.SetValue(wxPayData, wx.Sign, wxPayData.MakeSign(params[wx.KeyMap]))
+
+	xmlParam := wxPayData.ToXml()
+	req, body, reqErr := goreq.New().Post(wx.OrderQuery_Url).ContentType("xml").SendRawString(xmlParam).End()
+
+	return a.ParseResult(req, body, reqErr, params[wx.KeyMap])
+
+}
+
+func (a *WxPayService) ReverseWx(params map[string]string, count int) (result string, err error) {
+	if count <= 0 {
+		return "", errors.New("10005")
+	}
+	wxPayData := a.BuildCommonparam(params)
+	wxPayData.RemoveKey(wx.SpbillCreateIp)
+	a.SetValue(wxPayData, wx.TransactionId, params[wx.TransactionIdMap])
+	a.SetValue(wxPayData, wx.OutTradeNo, params[wx.OutTradeNoMap])
+
+	a.SetValue(wxPayData, wx.Sign, wxPayData.MakeSign(params[wx.KeyMap]))
+
+	xmlParam := wxPayData.ToXml()
+	reqNew := goreq.New()
+	certName := params[wx.CertNameMap]
+	certKey := params[wx.CertKeyMap]
+	rootCa := params[wx.RootCaMap]
+	if transport, e := cryptoHelper.CertTransport(&certName, &certKey, &rootCa); e == nil {
+		reqNew.Transport = transport
+		reqNew.Client = &http.Client{Transport: transport}
+	} else {
+		return "", errors.New("cert error:" + e.Error())
+	}
+
+	if req, body, reqErr := reqNew.Post(wx.Reverse_Url).ContentType("xml").SendRawString(xmlParam).End(); reqErr != nil {
+		return "", reqErr[0]
+	} else {
+
+		if result, e := a.ParseResult(req, body, reqErr, params[wx.KeyMap]); e == nil {
+			return result, nil
+		} else {
+			if len(result) == 0 {
+				return "", e
+			}
+			rJson, _ := simplejson.NewJson([]byte(result))
+
+			if recall, _ := rJson.Get(wx.Recall).String(); recall == "Y" {
+				time.Sleep(10000 * time.Millisecond) //10s
+				count = count - 1
+				return a.ReverseWx(params, count)
+			} else {
+				if v, e := rJson.Get(wx.ErrCode).String(); e != nil {
+					return "", errors.New("10007") //no data
+				} else {
+					return "", errors.New(v)
+				}
+			}
+
+		}
+
+	}
 
 }
 
