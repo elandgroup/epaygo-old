@@ -21,6 +21,10 @@ type AlPayService struct {
 func (a *AlPayService) DirectPay(params map[string]string) (result string, err error) {
 	payData := *a.BuildCommonparam(params, al.PayCustom)
 
+	// fmt.Println(helper.EncodingGBK("你好"))
+	// fmt.Println(helper.DecodingGBK(helper.EncodingGBK("你好")))
+	// fmt.Println("====")
+
 	bizContent := make(map[string]string)
 	a.SetValue(&bizContent, al.Scence, al.BarCodeScenceCustom)
 	a.SetValue(&bizContent, al.OutTradeNo, params[al.OutTradeNoMap])
@@ -37,10 +41,13 @@ func (a *AlPayService) DirectPay(params map[string]string) (result string, err e
 	payData[al.BizContent] = string(b)
 
 	payData[al.Sign], _ = cryptoHelper.GetSha1Hash(mapHelper.SortedUrl(&payData), params[al.SellerPrivateKey])
+
 	p, _ := json.Marshal(payData)
+
 	_, body, _ := goreq.New().Post(al.OpenApi).ContentType("form").SendMapString(string(p)).End()
-	return a.ParseResponse(helper.EncodingAlUrl(body), params[al.AliPublicKey], al.PayNode)
-	//return body, nil
+
+	//return a.ParseResponse(helper.EncodingAlUrl(body), params[al.AliPublicKey], al.PayNode)
+	return helper.EncodingAlUrl(body), nil
 }
 
 func (a *AlPayService) OrderQuery(params map[string]string) (result string, err error) {
@@ -59,8 +66,8 @@ func (a *AlPayService) OrderQuery(params map[string]string) (result string, err 
 
 	_, body, _ := goreq.New().Post(al.OpenApi).ContentType("form").SendMapString(string(p)).End()
 
-	return a.ParseResponse(helper.EncodingAlUrl(body), params[al.AliPublicKeyMap], al.QueryNode)
-	//return body, nil
+	//return a.ParseResponse(helper.EncodingAlUrl(body), params[al.AliPublicKeyMap], al.QueryNode)
+	return body, nil
 }
 
 func (a *AlPayService) Refund(params map[string]string) (result string, err error) {
