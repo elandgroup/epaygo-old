@@ -23,4 +23,7 @@ _testmain.go
 *.test
 *.prof
 
-debug
+debug.exe
+tmp
+# main folder is for green branch, not need to go get
+main
