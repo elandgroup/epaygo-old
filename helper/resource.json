@@ -1,0 +1,5 @@
+{
+    "10000" : "result is unknown",
+    "10001" : "The request failed, please check whether the network is normal",
+    "10002":"Pay treasure to return results signature check failed"
+}

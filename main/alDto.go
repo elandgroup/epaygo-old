@@ -25,20 +25,48 @@ type AlDirectPayDto struct {
 }
 
 type AlOrderQueryDto struct {
-	AlPayBaseDto
+	//AlPayBaseDto `mapstructure:",squash"`
+	AppId            string
+	SellerPrivateKey string
+	AliPublicKey     string
+	OutTradeNo       string
+	ALAuthToken      string
+	AuthCode         string
+	TotalAmount      string
+	Subject          string
+	StoreId          string
+
 	TradeNo string
 }
 
 type AlRefundDto struct {
-	AlPayBaseDto
+	//AlPayBaseDto
+	AppId            string
+	SellerPrivateKey string
+	AliPublicKey     string
+	OutTradeNo       string
+	ALAuthToken      string
+	AuthCode         string
+	TotalAmount      string
+	Subject          string
+	StoreId          string
+
 	TradeNo      string
 	RefundAmount string
 	OutRequestNo string
 	RefundReason string
-	StoreId      string
 }
 
 type AlReverseDto struct {
-	AlPayBaseDto
-	TradeNo string
+	//AlPayBaseDto
+	AppId            string
+	SellerPrivateKey string
+	AliPublicKey     string
+	OutTradeNo       string
+	ALAuthToken      string
+	AuthCode         string
+	TotalAmount      string
+	Subject          string
+	StoreId          string
+	TradeNo          string
 }

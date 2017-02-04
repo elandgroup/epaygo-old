@@ -21,74 +21,75 @@ func RegisterApi() {
 		return c.String(http.StatusOK, "hello epay")
 	})
 
-	v1 := e.Group("/v1")
+	apiGroup := e.Group("/api")
+	v1 := apiGroup.Group("/v1")
 
 	//wx := v1.Group("/wx")
 	al := v1.Group("/al")
 
-	// POST  HTTP/1.1
-	// Host: /api/v1/wx/pay
-	// Content-Type: application/json
-	// {
-	//     "AppId":"wx856df5e42a345096",
-	//     "Body":"go test",
-	//     "MchId":"1293941701",
-	//     "TotalFee":"1",
-	//     "key":"7911b23f732e60955b297f2021a2492f",
-	//     "SpbillCreateIp":"10.202.101.43",
-	//     "AuthCode":"130600782533911801"
+	// // POST  HTTP/1.1
+	// // Host: /api/v1/wx/pay
+	// // Content-Type: application/json
+	// // {
+	// //     "AppId":"wx856df5e42a345096",
+	// //     "Body":"go test",
+	// //     "MchId":"1293941701",
+	// //     "TotalFee":"1",
+	// //     "key":"7911b23f732e60955b297f2021a2492f",
+	// //     "SpbillCreateIp":"10.202.101.43",
+	// //     "AuthCode":"130600782533911801"
 
-	// }
-	al.POST("/pay", DirectPay)
-	// POST /api/v1/wx/query HTTP/1.1
-	// Host: localhost:1001
-	// Content-Type: application/json
-	// {
-	//     "AppId":"wx856df5e42a345096",
-	//     "MchId":"1293941701",
-	//     "key":"7911b23f732e60955b297f2021a2492f",
-	//     "SpbillCreateIp":"10.202.101.43",
-	//     "OutTradeNo":"82acc3e2e8c043528af963f72b873171"
+	// // }
+	// wx.POST("/pay", api.DirectPayWx)
+	// // POST /api/v1/wx/query HTTP/1.1
+	// // Host: localhost:1001
+	// // Content-Type: application/json
+	// // {
+	// //     "AppId":"wx856df5e42a345096",
+	// //     "MchId":"1293941701",
+	// //     "key":"7911b23f732e60955b297f2021a2492f",
+	// //     "SpbillCreateIp":"10.202.101.43",
+	// //     "OutTradeNo":"82acc3e2e8c043528af963f72b873171"
 
-	// }
-	//wx.POST("/query", api.OrderQueryWx)
-	// 	POST /api/v1/wx/refund HTTP/1.1
-	// Host: localhost:1001
-	// Content-Type: application/json
-	// Cache-Control: no-cache
-	// {
-	//     "AppId":"wx856df5e42a345096",
-	//     "MchId":"1293941701",
-	//     "TotalFee":"1",
-	//     "Key":"7911b23f732e60955b297f2021a2492f",
-	//     "RefundFee":"1",
-	//     "SpbillCreateIp":"10.202.101.43",
+	// // }
+	// wx.POST("/query", api.OrderQueryWx)
+	// // 	POST /api/v1/wx/refund HTTP/1.1
+	// // Host: localhost:1001
+	// // Content-Type: application/json
+	// // Cache-Control: no-cache
+	// // {
+	// //     "AppId":"wx856df5e42a345096",
+	// //     "MchId":"1293941701",
+	// //     "TotalFee":"1",
+	// //     "Key":"7911b23f732e60955b297f2021a2492f",
+	// //     "RefundFee":"1",
+	// //     "SpbillCreateIp":"10.202.101.43",
 
-	//     "OutTradeNo":"82acc3e2e8c043528af963f72b873171",
-	//         "OpUserId":"1293941701",
+	// //     "OutTradeNo":"82acc3e2e8c043528af963f72b873171",
+	// //         "OpUserId":"1293941701",
 
-	//     "CertName":".\\cert\\apiclient_cert.pem",
-	//     "CertKey":".\\cert\\apiclient_key.pem",
-	//     "RootCa":".\\cert\\rootca.pem"
+	// //     "CertName":".\\cert\\apiclient_cert.pem",
+	// //     "CertKey":".\\cert\\apiclient_key.pem",
+	// //     "RootCa":".\\cert\\rootca.pem"
 
-	// }
-	//wx.POST("/refund", api.RefundWx)
-	// POST /api/v1/wx/reverse HTTP/1.1
-	// Host: localhost:1001
-	// Content-Type: application/json
+	// // }
+	// wx.POST("/refund", api.RefundWx)
+	// // POST /api/v1/wx/reverse HTTP/1.1
+	// // Host: localhost:1001
+	// // Content-Type: application/json
 
-	// {
-	//     "AppId":"wx856df5e42a345096",
-	//     "MchId":"1293941701",
-	//     "key":"7911b23f732e60955b297f2021a2492f",
-	//     "SpbillCreateIp":"10.202.101.43",
-	//     "OutTradeNo":"574c6284140441168d6dba726362738d",
-	//     "CertName":".\\cert\\apiclient_cert.pem",
-	//     "CertKey":".\\cert\\apiclient_key.pem",
-	//     "RootCa":".\\cert\\rootca.pem"
+	// // {
+	// //     "AppId":"wx856df5e42a345096",
+	// //     "MchId":"1293941701",
+	// //     "key":"7911b23f732e60955b297f2021a2492f",
+	// //     "SpbillCreateIp":"10.202.101.43",
+	// //     "OutTradeNo":"574c6284140441168d6dba726362738d",
+	// //     "CertName":".\\cert\\apiclient_cert.pem",
+	// //     "CertKey":".\\cert\\apiclient_key.pem",
+	// //     "RootCa":".\\cert\\rootca.pem"
 
-	// }
-	//wx.POST("/reverse", api.ReverseWx)
+	// // }
+	// wx.POST("/reverse", api.ReverseWx)
 
 	// POST /api/v1/al/pay HTTP/1.1
 	// Host: localhost:1001
@@ -102,7 +103,7 @@ func RegisterApi() {
 	//     "AuthCode":"282715674991437167"
 
 	// }
-	//al.POST("/pay", api.DirectPayAl)
+	al.POST("/pay", DirectPay)
 
 	// POST /api/v1/al/query HTTP/1.1
 	// Host: localhost:1001
@@ -113,7 +114,7 @@ func RegisterApi() {
 	// 	"AliPublicKey":"MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDDI6d306Q8fIfCOaTXyiUeJHkrIvYISRcc73s3vF1ZT7XN8RNPwJxo8pWaJMmvyTn9N4HQ632qJBVHf8sxHi/fEsraprwCtzvzQETrNRwVxLO5jVmRGi60j8Ue1efIlzPXV9je9mkjzOmdssymZkh2QhUrCmZYI/FCEa3/cNMW0QIDAQAB",
 	// 	"OutTradeNo":"16e6354521094981aecfba7123685855"
 	// }
-	//al.POST("/query", api.OrderQueryAl)
+	al.POST("/query", OrderQuery)
 
 	// POST /api/v1/al/refund HTTP/1.1
 	// Host: localhost:1001
@@ -125,7 +126,7 @@ func RegisterApi() {
 	// 	"OutTradeNo":"16e6354521094981aecfba7123685855",
 	// 	"RefundAmount":"0.01"
 	// }
-	//al.POST("/refund", api.RefundAl)
+	al.POST("/refund", Refund)
 
 	// POST /api/v1/al/cancel HTTP/1.1
 	// Host: localhost:1001
@@ -136,6 +137,6 @@ func RegisterApi() {
 	//  	"AliPublicKey":"MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDDI6d306Q8fIfCOaTXyiUeJHkrIvYISRcc73s3vF1ZT7XN8RNPwJxo8pWaJMmvyTn9N4HQ632qJBVHf8sxHi/fEsraprwCtzvzQETrNRwVxLO5jVmRGi60j8Ue1efIlzPXV9je9mkjzOmdssymZkh2QhUrCmZYI/FCEa3/cNMW0QIDAQAB",
 	//     "OutTradeNo":"16e6354521094981aecfba7123685855"
 	// }
-	//al.POST("/reverse", api.ReverseAl)
+	al.POST("/reverse", Reverse)
 
 }

@@ -101,4 +101,11 @@ const (
 	SellerIdMap     = "SellerId"
 	TimeExpireMap   = "TimeExpire"
 	ExtendParamsMap = "ExtendParams"
+	//query
+	TradeNoMap = "TradeNo"
+
+	//refund
+	OutRequestNoMap = "OutRequestNo"
+	RefundReasonMap = "RefundReason"
+	RefundAmountMap = "RefundAmount"
 )
